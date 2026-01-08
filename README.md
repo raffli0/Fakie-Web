@@ -74,7 +74,7 @@ FAKIE is more than just a website—it's a digital hub for the skateboarding com
 
 ### Core
 - **React 18.3.1** - UI library
-- **Vite 6.3.5** - Build tool and dev server
+- **Vite 7.2.7** - Build tool and dev server
 - **TypeScript** - Type safety (via JSX)
 - **Tailwind CSS v4** - Utility-first styling
 
