@@ -106,7 +106,7 @@ fakie-skateboarding/
 │   │       ├── EventsSection.tsx     # Events & sessions
 │   │       ├── CultureSection.tsx    # Values & mission
 │   │       ├── Footer.tsx            # Site footer
-│   │       └── figma/
+│   │       └── res/
 │   │           └── ImageWithFallback.tsx  # Image component
 │   ├── styles/
 │   │   ├── index.css                 # Main stylesheet (imports)
