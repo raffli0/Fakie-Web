@@ -26,7 +26,7 @@ export function CultureSection() {
             What We Stand For
           </h2>
           <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
-            The culture that brings us together—values we live by on and off the board.
+            The culture that brings us together values we live by on and off the board.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export function CultureSection() {
           ))}
         </div>
 
-        <div className="max-w-3xl mx-auto text-center p-12 bg-neutral-900 border border-neutral-800 rounded-sm">
+        <div id="about-content" className="max-w-3xl mx-auto text-center p-12 bg-neutral-900 border border-neutral-800 rounded-sm">
           <h3 className="text-3xl mb-6 text-neutral-100">
             Built by skaters, for skaters
           </h3>

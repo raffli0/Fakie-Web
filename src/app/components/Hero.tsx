@@ -1,6 +1,10 @@
 import { ImageWithFallback } from './res/ImageWithFallback';
 
-export function Hero() {
+interface HeroProps {
+  onLoginClick?: () => void;
+}
+
+export function Hero({ onLoginClick }: HeroProps) {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -22,12 +26,15 @@ export function Hero() {
           A place to skate, learn, and belong.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button className="px-8 py-4 bg-neutral-100 text-black hover:bg-neutral-200 transition-colors rounded-sm tracking-wide">
+          <button onClick={onLoginClick} className="px-8 py-4 bg-neutral-100 text-black hover:bg-neutral-200 hover:cursor-pointer transition-colors rounded-sm tracking-wide">
             JOIN THE COMMUNITY
           </button>
-          <button className="px-8 py-4 bg-transparent border-2 border-neutral-400 text-neutral-100 hover:border-neutral-200 hover:text-neutral-200 transition-colors rounded-sm tracking-wide">
-            EXPLORE SPOTS
-          </button>
+          <a href="#spots">
+            <button className="px-8 py-4 bg-transparent border-2 border-neutral-400 text-neutral-100 hover:border-neutral-200 hover:text-neutral-200 hover:cursor-pointer transition-colors rounded-sm tracking-wide">
+              EXPLORE SPOTS
+            </button>
+          </a>
+
         </div>
       </div>
 

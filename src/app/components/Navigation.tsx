@@ -1,4 +1,9 @@
-export function Navigation() {
+interface NavigationProps {
+  onLoginClick?: () => void;
+  onGearClick?: () => void;
+}
+
+export function Navigation({ onLoginClick, onGearClick }: NavigationProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -16,12 +21,28 @@ export function Navigation() {
             <a href="#spots" className="text-neutral-300 hover:text-neutral-100 transition-colors">
               Spots
             </a>
+            {onGearClick && (
+              <button
+                onClick={onGearClick}
+                className="text-neutral-300 hover:text-neutral-100 transition-colors"
+              >
+                Gear
+              </button>
+            )}
             <a href="#events" className="text-neutral-300 hover:text-neutral-100 transition-colors">
               Events
             </a>
             <a href="#about" className="text-neutral-300 hover:text-neutral-100 transition-colors">
               About
             </a>
+            {onLoginClick && (
+              <button
+                onClick={onLoginClick}
+                className="px-4 py-2 bg-neutral-100 text-black hover:bg-neutral-200 hover:cursor-pointer transition-colors rounded-sm text-sm tracking-wide"
+              >
+                LOGIN
+              </button>
+            )}
           </div>
         </div>
       </div>

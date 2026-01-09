@@ -1,6 +1,10 @@
-import { MapPin, Star, MessageCircle } from 'lucide-react';
+import { MapPin, Star, MessageCircle, Edit2 } from 'lucide-react';
 
-export function SpotsSection() {
+interface SpotsSectionProps {
+  onSubmitSpotClick?: () => void;
+  onEditSpotClick?: () => void;
+}
+export function SpotsSection({ onSubmitSpotClick, onEditSpotClick }: SpotsSectionProps) {
   const spots = [
     {
       name: "Riverside DIY",
@@ -24,7 +28,7 @@ export function SpotsSection() {
       type: "Street Spot",
       rating: 4.2,
       comments: 18,
-      description: "Smooth ground, ledges, and stairs. Watch out for security after 6pm."
+      description: "Smooth ground, ledges, and stairs. sWatch out for security after 6pm."
     },
     {
       name: "Sunset Ramps",
@@ -49,7 +53,7 @@ export function SpotsSection() {
       rating: 4.4,
       comments: 15,
       description: "Perfect for learning. Flat ground and small obstacles."
-    }
+    },
   ];
 
   return (
@@ -60,13 +64,13 @@ export function SpotsSection() {
             Skate Spots
           </h2>
           <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
-            Community-shared locations. From DIY spots to official parks—find your session.
+            Community-shared locations. From DIY spots to official parks find your session.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {spots.map((spot, index) => (
-            <div 
+            <div
               key={index}
               className="p-6 bg-neutral-900 border border-neutral-800 rounded-sm hover:border-neutral-600 transition-colors"
             >
@@ -82,7 +86,7 @@ export function SpotsSection() {
                   {spot.type}
                 </span>
               </div>
-              
+
               <p className="text-neutral-400 mb-4 text-sm leading-relaxed">
                 {spot.description}
               </p>
@@ -102,9 +106,21 @@ export function SpotsSection() {
         </div>
 
         <div className="text-center mt-12">
-          <button className="px-8 py-4 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 transition-colors rounded-sm">
-            Submit a Spot
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <button
+              className="px-8 py-4 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 transition-colors rounded-sm"
+              onClick={onSubmitSpotClick}
+            >
+              Submit a Spot
+            </button>
+            <button
+              className="px-8 py-4 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 hover:cursor-pointer transition-colors rounded-sm flex items-center gap-2"
+              onClick={onEditSpotClick}
+            >
+              <Edit2 className="w-4 h-4" />
+              Edit Demo Spot
+            </button>
+          </div>
         </div>
       </div>
     </section>

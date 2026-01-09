@@ -15,17 +15,17 @@ export function Footer() {
           <div>
             <h4 className="text-neutral-100 mb-4">Community</h4>
             <ul className="space-y-2 text-neutral-500 text-sm">
-              <li><a href="#" className="hover:text-neutral-300 transition-colors">Member Stories</a></li>
-              <li><a href="#" className="hover:text-neutral-300 transition-colors">Code of Conduct</a></li>
-              <li><a href="#" className="hover:text-neutral-300 transition-colors">Get Involved</a></li>
+              <li><a href="#community" className="hover:text-neutral-300 transition-colors">Member Stories</a></li>
+              <li><a href="#about" className="hover:text-neutral-300 transition-colors">Code of Conduct</a></li>
+              <li><a href="#about-content" className="hover:text-neutral-300 transition-colors">Get Involved</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-neutral-100 mb-4">Resources</h4>
             <ul className="space-y-2 text-neutral-500 text-sm">
-              <li><a href="#" className="hover:text-neutral-300 transition-colors">Find Spots</a></li>
-              <li><a href="#" className="hover:text-neutral-300 transition-colors">Events Calendar</a></li>
+              <li><a href="#spots" className="hover:text-neutral-300 transition-colors">Find Spots</a></li>
+              <li><a href="#events" className="hover:text-neutral-300 transition-colors">Events Calendar</a></li>
               <li><a href="#" className="hover:text-neutral-300 transition-colors">Learning Resources</a></li>
             </ul>
           </div>
