@@ -14,7 +14,7 @@ export function RegisterPage({ onBackClick, onLoginClick }: RegisterPageProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -45,7 +45,31 @@ export function RegisterPage({ onBackClick, onLoginClick }: RegisterPageProps) {
     }
 
     // Handle registration logic here
-    console.log('Register attempt:', { username, email, password });
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // Success
+      console.log('Registration successful:', data);
+      alert('Registration successful! Please login.');
+      if (onLoginClick) {
+        onLoginClick();
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Failed to register');
+    }
   };
 
   return (

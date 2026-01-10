@@ -14,8 +14,23 @@ import { SkateGearPage } from './components/SkateGearPage';
 import { AddGearPage } from './components/AddGearPage';
 import { EditGearPage } from './components/EditGearPage';
 
+import { useAuth } from './context/AuthContext';
+import { useEffect } from 'react';
+
 export default function App() {
+  const { user, logout, isLoading } = useAuth();
   const [currentView, setCurrentView] = useState<'home' | 'login' | 'register' | 'submitSpot' | 'editSpot' | 'gear' | 'addGear' | 'editGear'>('home');
+  const [selectedSpotId, setSelectedSpotId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (user && (currentView === 'login' || currentView === 'register')) {
+      setCurrentView('home');
+    }
+  }, [user, currentView]);
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+  }
 
   if (currentView === 'login') {
     return (
@@ -49,11 +64,15 @@ export default function App() {
     );
   }
 
-  if (currentView === 'editSpot') {
+  if (currentView === 'editSpot' && selectedSpotId) {
     return (
       <div className="min-h-screen bg-black">
         <EditSpotPage
-          onBackClick={() => setCurrentView('home')}
+          spotId={selectedSpotId}
+          onBackClick={() => {
+            setSelectedSpotId(null);
+            setCurrentView('home');
+          }}
         />
       </div>
     );
@@ -96,12 +115,17 @@ export default function App() {
       <Navigation
         onLoginClick={() => setCurrentView('login')}
         onGearClick={() => setCurrentView('gear')}
+        user={user}
+        onLogoutClick={logout}
       />
       <Hero onLoginClick={() => setCurrentView('login')} />
       <CommunitySection />
       <SpotsSection
         onSubmitSpotClick={() => setCurrentView('submitSpot')}
-        onEditSpotClick={() => setCurrentView('editSpot')}
+        onEditSpotClick={(spotId) => {
+          setSelectedSpotId(spotId);
+          setCurrentView('editSpot');
+        }}
       />
       <EventsSection />
       <CultureSection />

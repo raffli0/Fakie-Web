@@ -18,9 +18,9 @@ export function CommunitySection() {
       accent: "bg-lime-900/20 border-lime-800/30"
     },
     {
-      name: "Axel",
+      name: "The King",
       level: "Pro",
-      story: "Been skating for 15 years. FAKIE reminds me why I started pure love for the board and the people.",
+      story: "Been skating for 4 years. FAKIE reminds me why I started pure love for the board and the people.",
       image: "https://images.unsplash.com/photo-1577545726235-e3ac5e5b91f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxza2F0ZSUyMHBhcmslMjBkaXZlcnNlfGVufDF8fHx8MTc2Nzg4MDkxNnww&ixlib=rb-4.1.0&q=80&w=1080",
       accent: "bg-red-900/20 border-red-800/30"
     }

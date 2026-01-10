@@ -34,7 +34,7 @@ export function AddGearPage({ onBackClick }: AddGearPageProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
@@ -55,35 +55,57 @@ export function AddGearPage({ onBackClick }: AddGearPageProps) {
       return;
     }
 
-    const ratingNum = parseFloat(rating);
+    const ratingNum = parseInt(rating);
     if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
-      setError('Rating must be between 1 and 5');
+      setError('Rating must be a whole number between 1 and 5');
       return;
     }
 
-    // Handle submit logic here
-    console.log('Add gear:', {
-      gearName,
-      category,
-      brand,
-      description,
-      rating: ratingNum,
-      image: image?.name
-    });
+    // Map category values
+    const categoryMap: Record<string, string> = {
+      'Deck': 'deck',
+      'Trucks': 'truck',
+      'Wheels': 'wheel'
+    };
 
-    // Show success message
-    setSuccess(true);
+    try {
+      const response = await fetch('http://localhost:3000/api/gear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: gearName,
+          category: categoryMap[category],
+          brand: brand,
+          description: description,
+          rating: ratingNum,
+          image_url: '', // Placeholder
+        }),
+      });
 
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      setGearName('');
-      setCategory('');
-      setBrand('');
-      setDescription('');
-      setRating('');
-      setImage(null);
-      setSuccess(false);
-    }, 2000);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit review');
+      }
+
+      setSuccess(true);
+
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        setGearName('');
+        setCategory('');
+        setBrand('');
+        setDescription('');
+        setRating('');
+        setImage(null);
+        setSuccess(false);
+        if (onBackClick) onBackClick();
+      }, 2000);
+
+    } catch (err: any) {
+      setError(err.message || 'Failed to connect to server');
+    }
   };
 
   return (
@@ -195,10 +217,10 @@ export function AddGearPage({ onBackClick }: AddGearPageProps) {
                   type="number"
                   min="1"
                   max="5"
-                  step="0.1"
+                  step="1"
                   value={rating}
                   onChange={(e) => setRating(e.target.value)}
-                  placeholder="4.5"
+                  placeholder="5"
                   className="w-32 px-4 py-3 bg-neutral-800 border border-neutral-700 text-neutral-100 rounded-sm placeholder:text-neutral-500 focus:outline-none focus:border-neutral-500 transition-colors"
                 />
                 <div className="flex items-center gap-1 text-neutral-400">

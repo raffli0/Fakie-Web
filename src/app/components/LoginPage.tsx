@@ -7,12 +7,15 @@ interface LoginPageProps {
   onRegisterClick?: () => void;
 }
 
+import { useAuth } from '../context/AuthContext';
+
 export function LoginPage({ onBackClick, onRegisterClick }: LoginPageProps) {
+  const { checkAuth } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -28,7 +31,27 @@ export function LoginPage({ onBackClick, onRegisterClick }: LoginPageProps) {
     }
 
     // Handle login logic here
-    console.log('Login attempt:', { email, password });
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      alert('Login successful!');
+      await checkAuth();
+      if (onBackClick) onBackClick();
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Failed to login');
+    }
   };
 
   return (

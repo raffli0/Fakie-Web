@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ImageWithFallback } from './res/ImageWithFallback';
 import { Star, Edit2, Trash2, Plus, ArrowLeft } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface SkateGearPageProps {
   onAddGearClick?: () => void;
@@ -11,85 +12,46 @@ interface SkateGearPageProps {
 type GearCategory = 'All' | 'Deck' | 'Trucks' | 'Wheels';
 
 interface GearItem {
-  id: string;
+  id: number;
   name: string;
-  category: 'Deck' | 'Trucks' | 'Wheels';
+  category: 'deck' | 'truck' | 'wheel';
   brand: string;
   rating: number;
   description: string;
-  imageUrl: string;
-  isOwner?: boolean; // Mock ownership for demo
+  image_url: string;
+  created_by: number;
 }
-
-const gearData: GearItem[] = [
-  {
-    id: '1',
-    name: 'Street Classic 8.0"',
-    category: 'Deck',
-    brand: 'Independent Skate Co.',
-    rating: 4.8,
-    description: 'Perfect street deck with medium concave. Durable 7-ply maple construction. Ideal for technical skating and consistent pop.',
-    imageUrl: 'https://images.unsplash.com/photo-1547447134-cd3f5c716030?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxza2F0ZWJvYXJkJTIwZGVja3xlbnwxfHx8fDE3Njc4OTQ2NzB8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    isOwner: true
-  },
-  {
-    id: '2',
-    name: 'Stage 11 Standard',
-    category: 'Trucks',
-    brand: 'Independent',
-    rating: 4.9,
-    description: 'Legendary trucks that have stood the test of time. Smooth turning, durable, and perfect for street and park. Industry standard for good reason.',
-    imageUrl: 'https://images.unsplash.com/photo-1564982750957-f5e943146ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxza2F0ZWJvYXJkJTIwdHJ1Y2tzfGVufDF8fHx8MTc2Nzg5NDY3MHww&ixlib=rb-4.1.0&q=80&w=1080',
-    isOwner: false
-  },
-  {
-    id: '3',
-    name: 'Spitfire Formula Four 52mm',
-    category: 'Wheels',
-    brand: 'Spitfire',
-    rating: 4.7,
-    description: 'Fast, smooth, and flatspot-resistant. These wheels maintain speed while providing excellent grip. Perfect size for street and park.',
-    imageUrl: 'https://images.unsplash.com/photo-1593950404788-b7c9c72e589b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxza2F0ZWJvYXJkJTIwd2hlZWxzfGVufDF8fHx8MTc2Nzg5NDY3MHww&ixlib=rb-4.1.0&q=80&w=1080',
-    isOwner: false
-  },
-  {
-    id: '4',
-    name: 'Welcome Moontrimmer 8.25"',
-    category: 'Deck',
-    brand: 'Welcome Skateboards',
-    rating: 4.6,
-    description: 'Unique shape with excellent concave. Great for bowls and transitions. Artwork is fire and construction is top-tier.',
-    imageUrl: 'https://images.unsplash.com/photo-1593950404789-b4f0c865fb68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxza2F0ZWJvYXJkfGVufDF8fHx8MTc2Nzg5NDY3MHww&ixlib=rb-4.1.0&q=80&w=1080',
-    isOwner: false
-  },
-  {
-    id: '5',
-    name: 'Venture V-Light 5.2',
-    category: 'Trucks',
-    brand: 'Venture',
-    rating: 4.5,
-    description: 'Lightweight without sacrificing durability. Quick turning and responsive. Great for technical street skating.',
-    imageUrl: 'https://images.unsplash.com/photo-1547447134-cd3f5c716030?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxza2F0ZWJvYXJkfGVufDF8fHx8MTc2Nzg5NDY3MHww&ixlib=rb-4.1.0&q=80&w=1080',
-    isOwner: true
-  },
-  {
-    id: '6',
-    name: 'Bones STF 53mm V5',
-    category: 'Wheels',
-    brand: 'Bones',
-    rating: 4.8,
-    description: 'Street Tech Formula wheels are unmatched. Fast, slide-friendly, and virtually flatspot-proof. Essential for street skating.',
-    imageUrl: 'https://images.unsplash.com/photo-1564982752979-d8f69c6e34f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwzfHxza2F0ZWJvYXJkfGVufDF8fHx8MTc2Nzg5NDY3MHww&ixlib=rb-4.1.0&q=80&w=1080',
-    isOwner: false
-  }
-];
 
 export function SkateGearPage({ onAddGearClick, onEditGearClick, onBackClick }: SkateGearPageProps) {
   const [activeCategory, setActiveCategory] = useState<GearCategory>('All');
+  const [gearData, setGearData] = useState<GearItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchGear();
+  }, []);
+
+  const fetchGear = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/gear');
+      const data = await response.json();
+      if (data.success) {
+        setGearData(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch gear', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredGear = activeCategory === 'All'
     ? gearData
-    : gearData.filter(gear => gear.category === activeCategory);
+    : gearData.filter(gear => {
+      const map: Record<string, string> = { 'Deck': 'deck', 'Trucks': 'truck', 'Wheels': 'wheel' };
+      return gear.category === map[activeCategory];
+    });
 
   const categories: GearCategory[] = ['All', 'Deck', 'Trucks', 'Wheels'];
 
@@ -133,71 +95,72 @@ export function SkateGearPage({ onAddGearClick, onEditGearClick, onBackClick }: 
           ))}
         </div>
 
-        {/* Gear Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {filteredGear.map((gear) => (
-            <div
-              key={gear.id}
-              className="bg-neutral-900 border border-neutral-800 rounded-sm overflow-hidden hover:border-neutral-600 transition-colors group"
-            >
-              {/* Image */}
-              <div className="relative h-48 bg-neutral-800 overflow-hidden">
-                <ImageWithFallback
-                  src={gear.imageUrl}
-                  alt={gear.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-xl mb-1 text-neutral-100">{gear.name}</h3>
-                    <p className="text-sm text-neutral-500">{gear.brand}</p>
-                  </div>
-                  <span className="text-xs px-3 py-1 bg-neutral-800 text-neutral-300 rounded-full whitespace-nowrap ml-2">
-                    {gear.category}
-                  </span>
+        {loading ? <div className="text-center text-neutral-400">Loading gear...</div> : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {filteredGear.map((gear) => (
+              <div
+                key={gear.id}
+                className="bg-neutral-900 border border-neutral-800 rounded-sm overflow-hidden hover:border-neutral-600 transition-colors group"
+              >
+                {/* Image */}
+                <div className="relative h-48 bg-neutral-800 overflow-hidden">
+                  <ImageWithFallback
+                    src={gear.image_url || 'https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&q=80&w=1080'} // Fallback
+                    alt={gear.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
 
-                {/* Rating */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-amber-600 text-amber-600" />
-                    <span className="text-neutral-100">{gear.rating}</span>
+                {/* Content */}
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-xl mb-1 text-neutral-100">{gear.name}</h3>
+                      <p className="text-sm text-neutral-500">{gear.brand}</p>
+                    </div>
+                    <span className="text-xs px-3 py-1 bg-neutral-800 text-neutral-300 rounded-full whitespace-nowrap ml-2 capitalize">
+                      {gear.category}
+                    </span>
                   </div>
-                  <span className="text-neutral-600">•</span>
-                  <span className="text-neutral-500 text-sm">Based on crew reviews</span>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-amber-600 text-amber-600" />
+                      <span className="text-neutral-100">{gear.rating}</span>
+                    </div>
+                    <span className="text-neutral-600">•</span>
+                    <span className="text-neutral-500 text-sm">Based on crew reviews</span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-neutral-400 text-sm leading-relaxed mb-6">
+                    {gear.description}
+                  </p>
+
+                  {/* Action Buttons - Only show for owner or admin */}
+                  {(user && (user.id === gear.created_by || user.role === 'admin')) && (
+                    <div className="flex items-center gap-2 pt-4 border-t border-neutral-800">
+                      <button
+                        onClick={onEditGearClick}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-neutral-100 transition-colors rounded-sm text-sm"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </button>
+                      <button
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-red-900/20 text-red-400 hover:bg-red-900/30 border border-red-900/30 hover:border-red-800/50 transition-colors rounded-sm text-sm"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                {/* Description */}
-                <p className="text-neutral-400 text-sm leading-relaxed mb-6">
-                  {gear.description}
-                </p>
-
-                {/* Action Buttons - Only show for owner or admin */}
-                {gear.isOwner && (
-                  <div className="flex items-center gap-2 pt-4 border-t border-neutral-800">
-                    <button
-                      onClick={onEditGearClick}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-neutral-100 transition-colors rounded-sm text-sm"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
-                    <button
-                      className="flex items-center justify-center gap-2 px-4 py-2 bg-red-900/20 text-red-400 hover:bg-red-900/30 border border-red-900/30 hover:border-red-800/50 transition-colors rounded-sm text-sm"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete
-                    </button>
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Add Gear Button */}
         <div className="text-center">

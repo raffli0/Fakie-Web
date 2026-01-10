@@ -34,7 +34,7 @@ export function SubmitSpotPage({ onBackClick }: SubmitSpotPageProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
@@ -55,29 +55,59 @@ export function SubmitSpotPage({ onBackClick }: SubmitSpotPageProps) {
       return;
     }
 
-    // Handle submit logic here
-    console.log('Submit spot:', {
-      spotName,
-      location,
-      description,
-      spotType,
-      difficulty,
-      image: image?.name
-    });
+    // Map difficulty to backend enum
+    const difficultyMap: Record<string, string> = {
+      'Beginner': 'easy',
+      'Intermediate': 'medium',
+      'Advanced': 'hard'
+    };
 
-    // Show success message
-    setSuccess(true);
+    // Combine Type into description or handle it. 
+    // Since backend doesn't have 'type' column yet, we'll prefix it to description for now to preserve it.
+    const finalDescription = `[Type: ${spotType}] ${description}`;
 
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      setSpotName('');
-      setLocation('');
-      setDescription('');
-      setSpotType('');
-      setDifficulty('');
-      setImage(null);
-      setSuccess(false);
-    }, 2000);
+    try {
+      const response = await fetch('http://localhost:3000/api/spots', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: spotName,
+          location: location,
+          description: finalDescription,
+          difficulty: difficultyMap[difficulty],
+          image_url: '', // Placeholder until image upload is implemented
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit spot');
+      }
+
+      // Success
+      setSuccess(true);
+      console.log('Spot submitted:', data);
+
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        setSpotName('');
+        setLocation('');
+        setDescription('');
+        setSpotType('');
+        setDifficulty('');
+        setImage(null);
+        setSuccess(false);
+        if (onBackClick) onBackClick();
+      }, 2000);
+
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Failed to connect to server');
+    }
   };
 
   return (
